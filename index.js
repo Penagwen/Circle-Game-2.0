@@ -74,8 +74,6 @@ class Player{
 
 function Update(){
     requestAnimationFrame(Update);
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
     c.fillStyle = "white";
     c.fillRect(0, 0, canvas.width, canvas.height);
 
