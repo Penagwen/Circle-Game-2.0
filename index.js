@@ -6,13 +6,13 @@ canvas.height = window.innerHeight;
 
 // Variables
 let player;
-let eneimes;
+let enemies;
 const controls = {
     up: "w",
     down: "s",
     left: "a",
     right: "d",
-    sprint: "r",
+    sprint: "shift",
 }
 
 // Classes
@@ -72,12 +72,78 @@ class Player{
     }
 }
 
+class Enemy{
+    constructor(x, y, velocity, type, speed){
+        this.x = x;
+        this.y = y;
+        this.radius = (Math.random()*8)+4;
+        this.velocity = velocity;
+        this.type = type;
+        this.speed = speed;
+    }
+    draw(){
+        c.beginPath();
+        c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
+        c.fillStyle = "black";
+        c.fill();
+    }
+    update(){
+        this.draw();
+        this.x -= this.velocity.x;
+        this.y -= this.velocity.y;
+    }
+}
+
+let frame;
 function Update(){
-    requestAnimationFrame(Update);
+    // clear the screen
+    frame = requestAnimationFrame(Update);
     c.fillStyle = "rgba(255, 255, 255, 0.65)";
     c.fillRect(0, 0, canvas.width, canvas.height);
 
+    // Every random few frames spawn a enemy
+    if(frame%((Math.floor(Math.random()*20))+30) == 0){
+        spawnEnemies();
+    }
+
     player.update();
+
+    enemies.forEach((enemy, index) => {
+        // The chance for the enemy to turn towords the player
+        if(Math.random() > 0.99){
+            const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x)
+
+            enemy.velocity.x = Math.cos(angle)* enemy.speed;
+            enemy.velocity.y = Math.sin(angle)* enemy.speed;
+        }
+
+        // if enemy goes off screen remove it
+        if(enemy.x + enemy.radius < 0 || enemy.x - enemy.radius > canvas.width || enemy.y + enemy.radius < 0 || enemy.y - enemy.radius > canvas.height ){
+            setTimeout(() =>{
+                enemies.splice(index, 1)
+            }, 0)
+        }
+
+        enemy.update();
+    })
+}
+
+function spawnEnemies(){
+    // set the spawn pos and get the direction towords the player
+    let x, y;
+    let radius = Math.round(Math.random()*7)+7;
+    if(Math.random() < 0.5){
+        x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
+        y = Math.random() * canvas.height;
+    }else{
+        x = Math.random() * canvas.width;
+        y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
+    }
+    const angle = Math.atan2(player.y - y, player.x - x);
+    const velocityX = Math.cos(angle)* -(4 - radius/6),
+        velocityY = Math.sin(angle)* -(4 - radius/6);
+
+    enemies.push(new Enemy(x, y, {x:velocityX, y:velocityY}, "normal", -(4 - radius/6)));
 }
 
 window.onkeydown = (e) => {
@@ -120,7 +186,7 @@ window.onkeyup = (e) => {
 
 function init(){
     player = new Player(canvas.width/2, canvas.height/2, 10, "red", {x:0, y:0});
-    eneimes = [];
+    enemies = [];
     Update();
 }
 
