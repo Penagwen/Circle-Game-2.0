@@ -74,7 +74,7 @@ class Player{
 
 function Update(){
     requestAnimationFrame(Update);
-    c.fillStyle = "white";
+    c.fillStyle = "rgba(255, 255, 255, 0.65)";
     c.fillRect(0, 0, canvas.width, canvas.height);
 
     player.update();
