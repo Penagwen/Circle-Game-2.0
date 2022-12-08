@@ -39,25 +39,25 @@ class Player{
         // Player movement
 
         // Going up
-        if(this.dir[0]){
+        if(this.dir[0] && (this.y - this.speed) > 0){
             this.velocity.y = this.speed;
         }else if(this.velocity.y == this.speed){
             this.velocity.y = 0;
         }
         //Going Down
-        if(this.dir[1]){
+        if(this.dir[1] && (this.y - this.speed + this.radius*2) < canvas.height){
             this.velocity.y = -this.speed;
         }else if(this.velocity.y == -this.speed){
             this.velocity.y = 0;
         }
         //Going Left
-        if(this.dir[2]){
+        if(this.dir[2] && (this.x - this.speed) > 0){
             this.velocity.x = this.speed;
         }else if(this.velocity.x == this.speed){
             this.velocity.x = 0;
         }
         //Going Right
-        if(this.dir[3]){
+        if(this.dir[3] && (this.x - this.speed + this.radius*2) < canvas.width){
             this.velocity.x = -this.speed;
         }else if(this.velocity.x == -this.speed){
             this.velocity.x = 0;
