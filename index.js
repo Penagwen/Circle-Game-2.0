@@ -16,6 +16,7 @@ let currPoints = 0;
 let currAblity = 0;
 document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
 let start = false;
+let stoptime = false;
 
 
 
@@ -103,10 +104,25 @@ function Update(){
     // clear the screen
     frame = requestAnimationFrame(Update);
     c.fillStyle = "rgba(255, 255, 255, 0.65)";
+    // if stop time is active start the effect
+    if(stoptime){c.fillStyle = "rgba(0, 0, 0, 0.05)"}
     c.fillRect(0, 0, canvas.width, canvas.height);
 
     document.querySelector(".pointsDis").innerHTML = `Points: ${currPoints}`;
     player.update();
+
+    if(stoptime){ enemies.forEach((enemy) => {
+        const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+        if(dist - enemy.radius - player.radius < 0){
+            setTimeout(() => {
+                cancelAnimationFrame(frame);
+                endgame();
+            }, 0)
+        }
+
+        enemy.color = "white";
+        enemy.draw(); 
+    }); return; }
 
     // Update the score
     currPoints ++;
@@ -117,6 +133,8 @@ function Update(){
     }
 
     enemies.forEach((enemy, index) => {
+        // if stop time is not active set the color to normal
+        enemy.color = "black";
         // The chance for the enemy to turn towords the player
         if(Math.random() > 0.99){
             const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x)
@@ -133,7 +151,7 @@ function Update(){
         }
 
         // end the game
-        const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y)
+        const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
         if(dist - enemy.radius - player.radius < 0){
             setTimeout(() => {
                 cancelAnimationFrame(frame);
@@ -164,7 +182,7 @@ function spawnEnemies(){
 }
 
 function useAbility(ability){
-
+    if(ability == "stoptime"){ stoptime = true; setTimeout(() => {stoptime = false;}, 5000)}
 }
 
 window.onkeydown = (e) => {
