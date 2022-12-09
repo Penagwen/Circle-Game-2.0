@@ -1,21 +1,142 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Manrope&display=swap');
+
         body {
             margin: 0px;
             overflow: hidden;
+            font-family: 'Manrope', sans-serif;
+            user-select: none;
+        }
+
+        .menu, .settingsMenu {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+
+            position: fixed;
+            /* half of width */
+            left: calc(50% - 300px);
+            /* half of height */
+            top: calc(50% - 200px);
+
+            background-color: black;
+
+            width: 600px;
+            height: 400px;
+
+            transition: left 0.45s;
+        }
+
+        .menu .score {
+            color: white;
+            font-size: xx-large;
+            transform: rotate(0deg);
+
+            margin-bottom: 15px;
+
+            animation-duration: 1.5s;
+            animation-iteration-count: infinite;
+        }
+
+        .menu .points {
+            color: white;
+            font-size: large;
+            transform: rotate(0deg);
+
+            margin-bottom: 45px;
+
+            animation-duration: 1.5s;
+            animation-iteration-count: infinite;
+        }
+
+        .menu button {
+            margin-bottom: 15px;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem; 
+            background-color: #EF4444; 
+            color: white;
+            font-size: 1.4rem;
+            line-height: 1.25rem; 
+            width: 500px;
+            height: 70px;
+
+            border-radius: 9999px; 
+        }
+
+        .menu button:hover {
+            background-color: #f15d5d; 
+        }
+
+        .settings .material-symbols-outlined {
+            font-variation-settings:'FILL' 1,'wght' 300,'GRAD' 0,'opsz' 48;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+
+            color: white;
+        }
+
+        .arrowback .material-symbols-outlined {
+            font-variation-settings:'FILL' 1,'wght' 300,'GRAD' 0,'opsz' 48;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+
+            color: white;
+        }
+
+        .material-symbols-outlined:hover {
+            color: #EEE;
+        }
+
+        .settingsMenu ul {
+            color: white;
+        }
+
+        .settingsMenu ul>*{
+            margin-top: 10px;
+        }
+
+        .pointsDis {
+            position: fixed;
+            margin: 10px;
+        }
+
+        @keyframes new-high-score {
+            0% {transform: rotate(12deg);}
+            50% {transform: rotate(-12deg);}
+            100% {transform: rotate(12deg);}
         }
     </style>
 
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <title>o</title>
 </head>
 <body>
-    <canvas></canvas>
+    <span class="pointsDis">Points: 0</span>
+    <canvas style="border: 1px solid black;"></canvas>
 
+    <div class="menu">
+        <div class="settings"><span class="material-symbols-outlined" onclick="document.querySelector('.settingsMenu').style.visibility = 'visible';">settings</span></div>
+        <span class="score">Highscore: 0</span>
+        <span class="points">Points: 0</span>
+        <button class="startBtn">Start</button>
+        <button class="shopBtn">Shop</button>
+    </div>
+    <div class="settingsMenu" style="visibility: hidden;">
+        <div class="arrowback"><span class="material-symbols-outlined" onclick="document.querySelector('.settingsMenu').style.visibility = 'hidden';">arrow_back</span></div>
+        <span style="text-decoration: underline; color: white; font-size: xxx-large;">Controls</span>
+        <ul class="controls"></ul>
+    </div>
+
+    
     <script src="./index.js"></script>
 </body>
 </html>

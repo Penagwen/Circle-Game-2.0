@@ -1,19 +1,21 @@
-const canvas = document.querySelector('canvas');
+const canvas = document.querySelector('canvas'); 
 const c = canvas.getContext('2d');
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Variables
+// when first loding in get the cookies
+setup();
+
+// Game Variables
 let player;
 let enemies;
-const controls = {
-    up: "w",
-    down: "s",
-    left: "a",
-    right: "d",
-    sprint: "shift",
-}
+console.log(eval('({' + getCookie("controls") + '})'));
+let controls = eval('({' + getCookie("controls") + '})');
+let currPoints = 0;
+let start = false;
+
+
 
 // Classes
 class Player{
@@ -101,12 +103,16 @@ function Update(){
     c.fillStyle = "rgba(255, 255, 255, 0.65)";
     c.fillRect(0, 0, canvas.width, canvas.height);
 
+    document.querySelector(".pointsDis").innerHTML = `Points: ${currPoints}`;
+    player.update();
+
+    // Update the score
+    currPoints ++;
+
     // Every random few frames spawn a enemy
     if(frame%((Math.floor(Math.random()*20))+30) == 0){
         spawnEnemies();
     }
-
-    player.update();
 
     enemies.forEach((enemy, index) => {
         // The chance for the enemy to turn towords the player
@@ -118,9 +124,18 @@ function Update(){
         }
 
         // if enemy goes off screen remove it
-        if(enemy.x + enemy.radius < 0 || enemy.x - enemy.radius > canvas.width || enemy.y + enemy.radius < 0 || enemy.y - enemy.radius > canvas.height ){
+        if(enemy.x + enemy.radius < -40 || enemy.x - enemy.radius > canvas.width+40 || enemy.y + enemy.radius < -40 || enemy.y - enemy.radius > canvas.height+40){
             setTimeout(() =>{
                 enemies.splice(index, 1)
+            }, 0)
+        }
+
+        // end the game
+        const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y)
+        if(dist - enemy.radius - player.radius < 1){
+            setTimeout(() => {
+                cancelAnimationFrame(frame);
+                endgame();
             }, 0)
         }
 
@@ -146,7 +161,9 @@ function spawnEnemies(){
     enemies.push(new Enemy(x, y, {x:velocityX, y:velocityY}, "normal", -(4 - radius/6)));
 }
 
+
 window.onkeydown = (e) => {
+    if(!start){ return; }
     // Up
     if(e.key.toLowerCase() == controls.up){
         player.dir[0] = true;
@@ -166,6 +183,7 @@ window.onkeydown = (e) => {
 }
 
 window.onkeyup = (e) => {
+    if(!start){ return; }
     // Up
     if(e.key.toLowerCase() == controls.up){
         player.dir[0] = false;
@@ -184,11 +202,77 @@ window.onkeyup = (e) => {
     }
 }
 
+
 function init(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     player = new Player(canvas.width/2, canvas.height/2, 10, "red", {x:0, y:0});
     enemies = [];
+    currPoints = 0;
+    start = true;
     Update();
 }
 
-init();
+function endgame(){
+    document.querySelector(".pointsDis").innerHTML = `Points: ${currPoints}`;
+    document.querySelector(".menu").style.left= "calc(50% - 300px)";
+    console.log(currPoints);
+    score += currPoints;
+    if(highscore < currPoints){
+        highscore = currPoints;
+        document.querySelector(".menu .score").innerHTML = `Highscore: ${highscore}`;
+        document.querySelector(".menu .score").style.animationName = "new-high-score"; 
+    }else{
+        document.querySelector(".menu .score").style.animationName = ""; 
+    }
+    document.querySelector(".menu .points").innerHTML = `Points: ${score}`;
 
+    document.cookie = `score=${score}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`;
+    document.cookie = `highscore=${highscore}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; 
+
+    start = false;
+}
+
+// Menu Variables
+
+let highscore = parseInt(getCookie("highscore"));
+let score = parseInt(getCookie("score"));
+
+// Menu Javascript
+
+document.querySelector(".startBtn").onmousedown = (e) => {
+    document.querySelector(".menu").style.left= "calc(100% + 600px)";
+    init();
+}
+
+let controlsText = [];
+Object.entries(controls).forEach(([name, val]) => {
+    controlsText.push(`<span style="font-size: x-large;">${name.toUpperCase()}: </span>` + `<button class="changeCtrlBtn ${name}" style="height: 40px; min-width: 80px; background-color: #EF4444; border-radius: 999px; color: white;" onclick="changeControl(this)">${val.toUpperCase()}</button>`);
+})
+document.querySelector(".settingsMenu .controls").innerHTML = controlsText.join("<br>");
+
+function changeControl(el){
+    el.onkeydown = (e) => {
+        e.target.innerHTML = e.key.toUpperCase();
+        controls[e.target.className.substring(14, e.target.className.length).toLowerCase()] = e.key.toLowerCase();
+        document.cookie = `controls= ${JSON.stringify(controls).replace("{", "").replace("}", "")}; expires=Mon, 1 Jan 2099 12:00:00 GMT;`;
+    }
+}
+
+function setup(){
+    if(getCookie("controls") == null){ document.cookie = `controls= ${'"up":"w","down":"s","left":"a","right":"d"'}; expires=Mon, 1 Jan 2099 12:00:00 GMT;`; }
+    else if(getCookie("score") == null){ document.cookie = `score=${0}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
+    else if(getCookie("highscore") == null){ document.cookie = `highscore=${0}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
+}
+
+function getCookie(name) {
+    var nameEQ = name + "=";
+    //alert(document.cookie);
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+    var c = ca[i];
+    while (c.charAt(0)==' ') c = c.substring(1);
+    if (c.indexOf(nameEQ) != -1) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+} 
