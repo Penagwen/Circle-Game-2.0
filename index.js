@@ -4,7 +4,7 @@ const c = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// Variables
+// Game Variables
 let player;
 let enemies;
 const controls = {
@@ -14,6 +14,8 @@ const controls = {
     right: "d",
     sprint: "shift",
 }
+let currPoints = 0;
+
 
 // Classes
 class Player{
@@ -101,12 +103,16 @@ function Update(){
     c.fillStyle = "rgba(255, 255, 255, 0.65)";
     c.fillRect(0, 0, canvas.width, canvas.height);
 
+    document.querySelector(".pointsDis").innerHTML = `Points: ${currPoints}`;
+    player.update();
+
+    // Update the score
+    currPoints ++;
+
     // Every random few frames spawn a enemy
     if(frame%((Math.floor(Math.random()*20))+30) == 0){
         spawnEnemies();
     }
-
-    player.update();
 
     enemies.forEach((enemy, index) => {
         // The chance for the enemy to turn towords the player
@@ -118,9 +124,18 @@ function Update(){
         }
 
         // if enemy goes off screen remove it
-        if(enemy.x + enemy.radius < 0 || enemy.x - enemy.radius > canvas.width || enemy.y + enemy.radius < 0 || enemy.y - enemy.radius > canvas.height ){
+        if(enemy.x + enemy.radius < -40 || enemy.x - enemy.radius > canvas.width+40 || enemy.y + enemy.radius < -40 || enemy.y - enemy.radius > canvas.height+40){
             setTimeout(() =>{
                 enemies.splice(index, 1)
+            }, 0)
+        }
+
+        // end the game
+        const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y)
+        if(dist - enemy.radius - player.radius < 1){
+            setTimeout(() => {
+                cancelAnimationFrame(frame);
+                endgame();
             }, 0)
         }
 
@@ -185,10 +200,51 @@ window.onkeyup = (e) => {
 }
 
 function init(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     player = new Player(canvas.width/2, canvas.height/2, 10, "red", {x:0, y:0});
     enemies = [];
+    currPoints = 0;
     Update();
 }
 
-init();
+function endgame(){
+    document.querySelector(".pointsDis").innerHTML = `Points: ${currPoints}`;
+    document.querySelector(".menu").style.left= "calc(50% - 300px)";
+    console.log(currPoints);
+    score += currPoints;
+    if(highscore < currPoints){
+        highscore = currPoints;
+        document.querySelector(".menu .score").innerHTML = `Highscore: ${highscore}`;
+        document.querySelector(".menu .score").style.animationName = "new-high-score"; 
+    }else{
+        document.querySelector(".menu .score").style.animationName = ""; 
+    }
+    document.querySelector(".menu .points").innerHTML = `Points: ${score}`;
+}
 
+// Menu Variables
+
+let highscore = 0;
+let score = 0;
+
+// Menu Javascript
+
+document.querySelector(".startBtn").onmousedown = (e) => {
+    document.querySelector(".menu").style.left= "calc(100% + 600px)";
+    init();
+}
+
+let controlsText = [];
+Object.entries(controls).forEach(([name, val]) => {
+    controlsText.push(`<span style="font-size: x-large;">${name.toUpperCase()}: </span>` + `<button class="changeCtrlBtn" style="height: 40px; min-width: 80px; background-color: #EF4444; border-radius: 999px; color: white;">${val.toUpperCase()}</button>`);
+})
+document.querySelector(".settingsMenu .controls").innerHTML = controlsText.join("<br>");
+document.querySelector(".settingsMenu .controls").onmousedown = (e) => {
+    if(e.target.className == "changeCtrlBtn"){
+        e.target.className = "changeCtrlBtn selected"
+    }
+}
+document.querySelector(".selected").onkeydown = (e) => {
+    console.log(e);
+}
