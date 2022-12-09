@@ -4,17 +4,17 @@ const c = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// when first loding in get the cookies
+setup();
+
 // Game Variables
 let player;
 let enemies;
-const controls = {
-    up: "w",
-    down: "s",
-    left: "a",
-    right: "d",
-    sprint: "shift",
-}
+console.log(eval('({' + getCookie("controls") + '})'));
+let controls = eval('({' + getCookie("controls") + '})');
 let currPoints = 0;
+let start = false;
+
 
 
 // Classes
@@ -161,7 +161,9 @@ function spawnEnemies(){
     enemies.push(new Enemy(x, y, {x:velocityX, y:velocityY}, "normal", -(4 - radius/6)));
 }
 
+
 window.onkeydown = (e) => {
+    if(!start){ return; }
     // Up
     if(e.key.toLowerCase() == controls.up){
         player.dir[0] = true;
@@ -181,6 +183,7 @@ window.onkeydown = (e) => {
 }
 
 window.onkeyup = (e) => {
+    if(!start){ return; }
     // Up
     if(e.key.toLowerCase() == controls.up){
         player.dir[0] = false;
@@ -199,12 +202,14 @@ window.onkeyup = (e) => {
     }
 }
 
+
 function init(){
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     player = new Player(canvas.width/2, canvas.height/2, 10, "red", {x:0, y:0});
     enemies = [];
     currPoints = 0;
+    start = true;
     Update();
 }
 
@@ -221,12 +226,17 @@ function endgame(){
         document.querySelector(".menu .score").style.animationName = ""; 
     }
     document.querySelector(".menu .points").innerHTML = `Points: ${score}`;
+
+    document.cookie = `score=${score}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`;
+    document.cookie = `highscore=${highscore}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; 
+
+    start = false;
 }
 
 // Menu Variables
 
-let highscore = 0;
-let score = 0;
+let highscore = parseInt(getCookie("highscore"));
+let score = parseInt(getCookie("score"));
 
 // Menu Javascript
 
@@ -237,14 +247,32 @@ document.querySelector(".startBtn").onmousedown = (e) => {
 
 let controlsText = [];
 Object.entries(controls).forEach(([name, val]) => {
-    controlsText.push(`<span style="font-size: x-large;">${name.toUpperCase()}: </span>` + `<button class="changeCtrlBtn" style="height: 40px; min-width: 80px; background-color: #EF4444; border-radius: 999px; color: white;">${val.toUpperCase()}</button>`);
+    controlsText.push(`<span style="font-size: x-large;">${name.toUpperCase()}: </span>` + `<button class="changeCtrlBtn ${name}" style="height: 40px; min-width: 80px; background-color: #EF4444; border-radius: 999px; color: white;" onclick="changeControl(this)">${val.toUpperCase()}</button>`);
 })
 document.querySelector(".settingsMenu .controls").innerHTML = controlsText.join("<br>");
-document.querySelector(".settingsMenu .controls").onmousedown = (e) => {
-    if(e.target.className == "changeCtrlBtn"){
-        e.target.className = "changeCtrlBtn selected"
+
+function changeControl(el){
+    el.onkeydown = (e) => {
+        e.target.innerHTML = e.key.toUpperCase();
+        controls[e.target.className.substring(14, e.target.className.length).toLowerCase()] = e.key.toLowerCase();
+        document.cookie = `controls= ${JSON.stringify(controls).replace("{", "").replace("}", "")}; expires=Mon, 1 Jan 2099 12:00:00 GMT;`;
     }
 }
-document.querySelector(".selected").onkeydown = (e) => {
-    console.log(e);
+
+function setup(){
+    if(getCookie("controls") == null){ document.cookie = `controls= ${'"up":"w","down":"s","left":"a","right":"d"'}; expires=Mon, 1 Jan 2099 12:00:00 GMT;`; }
+    else if(getCookie("score") == null){ document.cookie = `score=${0}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
+    else if(getCookie("highscore") == null){ document.cookie = `highscore=${0}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
 }
+
+function getCookie(name) {
+    var nameEQ = name + "=";
+    //alert(document.cookie);
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+    var c = ca[i];
+    while (c.charAt(0)==' ') c = c.substring(1);
+    if (c.indexOf(nameEQ) != -1) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+} 
