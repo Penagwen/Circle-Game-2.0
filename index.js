@@ -10,9 +10,11 @@ setup();
 // Game Variables
 let player;
 let enemies;
-console.log(eval('({' + getCookie("controls") + '})'));
 let controls = eval('({' + getCookie("controls") + '})');
+let abilitys = eval('({' + getCookie("abilitys") + '})');
 let currPoints = 0;
+let currAblity = 0;
+document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
 let start = false;
 
 
@@ -132,7 +134,7 @@ function Update(){
 
         // end the game
         const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y)
-        if(dist - enemy.radius - player.radius < 1){
+        if(dist - enemy.radius - player.radius < 0){
             setTimeout(() => {
                 cancelAnimationFrame(frame);
                 endgame();
@@ -161,6 +163,9 @@ function spawnEnemies(){
     enemies.push(new Enemy(x, y, {x:velocityX, y:velocityY}, "normal", -(4 - radius/6)));
 }
 
+function useAbility(ability){
+
+}
 
 window.onkeydown = (e) => {
     if(!start){ return; }
@@ -179,6 +184,15 @@ window.onkeydown = (e) => {
     // Right
     if(e.key.toLowerCase() == controls.right){
         player.dir[3] = true;
+    }
+
+    // abilitys
+    if(e.key.toLowerCase() == controls["cycle ability"]){
+        currAblity = Object.keys(abilitys).length-1 == currAblity ? 0 : currAblity + 1;
+        document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
+    }
+    if(e.key.toLowerCase() == controls["use ability"]){
+        useAbility(Object.keys(abilitys)[currAblity]);
     }
 }
 
@@ -206,6 +220,7 @@ window.onkeyup = (e) => {
 function init(){
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
     player = new Player(canvas.width/2, canvas.height/2, 10, "red", {x:0, y:0});
     enemies = [];
     currPoints = 0;
@@ -216,7 +231,6 @@ function init(){
 function endgame(){
     document.querySelector(".pointsDis").innerHTML = `Points: ${currPoints}`;
     document.querySelector(".menu").style.left= "calc(50% - 300px)";
-    console.log(currPoints);
     score += currPoints;
     if(highscore < currPoints){
         highscore = currPoints;
@@ -227,16 +241,18 @@ function endgame(){
     }
     document.querySelector(".menu .points").innerHTML = `Points: ${score}`;
 
-    document.cookie = `score=${score}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`;
-    document.cookie = `highscore=${highscore}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; 
+    document.cookie = `score= ${score}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`;
+    document.cookie = `high=${highscore}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; 
 
     start = false;
 }
 
 // Menu Variables
 
-let highscore = parseInt(getCookie("highscore"));
+let highscore = parseInt(getCookie("high"));
 let score = parseInt(getCookie("score"));
+const shopOptions = [["stoptime", 800], ["teleport", 1000], ["repel", 600], ["immunity", 800], ["speedx2", 400]];
+
 
 // Menu Javascript
 
@@ -259,10 +275,30 @@ function changeControl(el){
     }
 }
 
+shopOptions.forEach(([name, cost]) => {
+    document.querySelector(".shop .shop-options").innerHTML += `<div><span style="font-size: xx-large;">${name}: </span><span style="font-size: x-large;"> $${cost} </span><button style="height: 40px; min-width: 80px; background-color: #EF4444; border-radius: 999px; color: white;" onclick="buy(this);">Buy</button><span style="font-size: xx-large;"> - ${abilitys[name]}</span></div>`;
+})
+
+function buy(ability){
+    if(parseInt(Object.values(ability.parentNode.children)[1].innerHTML.replace("$", "")) > score){ return; }
+    score -= parseInt(Object.values(ability.parentNode.children)[1].innerHTML.replace("$", ""));
+    document.cookie = `score= ${score}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`;
+    document.querySelector('.shopPointsDis').innerHTML = `Points: ${score}`;
+    document.querySelector('.points').innerHTML = `Points: ${score}`;
+
+    abilitys[ability.parentNode.firstChild.innerHTML.replace(":", "").replace(" ", "")] ++;
+    ability.parentNode.lastChild.innerHTML =  ` - ${abilitys[ability.parentNode.firstChild.innerHTML.replace(":", "").replace(" ", "")]}`;
+    document.cookie = `abilitys= ${JSON.stringify(abilitys).replace("{", "").replace("}", "")}; expires=Mon, 1 Jan 2099 12:00:00 GMT;`;
+}
+
 function setup(){
-    if(getCookie("controls") == null){ document.cookie = `controls= ${'"up":"w","down":"s","left":"a","right":"d"'}; expires=Mon, 1 Jan 2099 12:00:00 GMT;`; }
-    else if(getCookie("score") == null){ document.cookie = `score=${0}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
-    else if(getCookie("highscore") == null){ document.cookie = `highscore=${0}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
+    if(getCookie("controls") == null){ document.cookie = `controls= ${'"up":"w","down":"s","left":"a","right":"d","use ability":"q","cycle ability":"r",'}; expires=Mon, 1 Jan 2099 12:00:00 GMT;`; }
+    if(getCookie("score") == null){ document.cookie = `score= 0; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
+    if(getCookie("high") == null){ document.cookie = `high= 0; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
+    if(getCookie("abilitys") == null){ document.cookie = `abilitys= ${'stoptime: 0,teleport: 0,repel: 0,immunity: 0,speedx2: 0,'}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
+
+    document.querySelector(".menu .points").innerHTML = `Points: ${getCookie("score")}`;
+    document.querySelector(".menu .score").innerHTML = `Highscore: ${getCookie("high")}`;
 }
 
 function getCookie(name) {

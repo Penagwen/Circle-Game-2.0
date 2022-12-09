@@ -11,7 +11,7 @@
             user-select: none;
         }
 
-        .menu, .settingsMenu {
+        .menu, .settingsMenu, .shop {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -105,6 +105,11 @@
             position: fixed;
             margin: 10px;
         }
+        .abilityDis {
+            position: fixed;
+            margin-left: 10px;
+            margin-top: 30px;
+        }
 
         @keyframes new-high-score {
             0% {transform: rotate(12deg);}
@@ -121,6 +126,7 @@
 </head>
 <body>
     <span class="pointsDis">Points: 0</span>
+    <span class="abilityDis">Ability:</span>
     <canvas style="border: 1px solid black;"></canvas>
 
     <div class="menu">
@@ -128,12 +134,18 @@
         <span class="score">Highscore: 0</span>
         <span class="points">Points: 0</span>
         <button class="startBtn">Start</button>
-        <button class="shopBtn">Shop</button>
+        <button class="shopBtn" onclick="document.querySelector('.shop').style.visibility = 'visible'; document.querySelector('.shopPointsDis').innerHTML = `Points: ${score}`;">Shop</button>
     </div>
     <div class="settingsMenu" style="visibility: hidden;">
         <div class="arrowback"><span class="material-symbols-outlined" onclick="document.querySelector('.settingsMenu').style.visibility = 'hidden';">arrow_back</span></div>
         <span style="text-decoration: underline; color: white; font-size: xxx-large;">Controls</span>
         <ul class="controls"></ul>
+    </div>
+    <div class="shop" style="visibility: hidden;">
+        <div class="arrowback"><span class="material-symbols-outlined" onclick="document.querySelector('.shop').style.visibility = 'hidden';">arrow_back</span></div>
+        <span style="text-decoration: underline; color: white; font-size: xxx-large;">Shop</span>
+        <span class="shopPointsDis" style="color: white; font-size: large;">Points: 0</span>
+        <div class="shop-options" style="color: white;">    </div>
     </div>
 
     
