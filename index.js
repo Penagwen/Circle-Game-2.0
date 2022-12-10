@@ -16,7 +16,10 @@ let currPoints = 0;
 let currAblity = 0;
 document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
 let start = false;
+let teleport = false;
 let stoptime = false;
+let repel = false;
+let immunity = false;
 
 
 
@@ -35,6 +38,12 @@ class Player{
         this.sprinting = false;
     }
     draw(){
+        if(immunity){
+            c.beginPath();
+            c.arc(this.x, this.y, this.radius+3, 0, Math.PI*2, false);
+            c.fillStyle = "cyan";
+            c.fill();
+        }
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
         c.fillStyle = this.color;
@@ -67,8 +76,6 @@ class Player{
         }else if(this.velocity.x == -this.speed){
             this.velocity.x = 0;
         }
- 
- 
 
         this.draw();
         // Check if the player is pressing two buttons at once
@@ -81,6 +88,7 @@ class Enemy{
     constructor(x, y, velocity, type, speed){
         this.x = x;
         this.y = y;
+        this.color = "black";
         this.radius = (Math.random()*8)+4;
         this.velocity = velocity;
         this.type = type;
@@ -89,7 +97,7 @@ class Enemy{
     draw(){
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
-        c.fillStyle = "black";
+        c.fillStyle = this.color;
         c.fill();
     }
     update(){
@@ -136,11 +144,16 @@ function Update(){
         // if stop time is not active set the color to normal
         enemy.color = "black";
         // The chance for the enemy to turn towords the player
-        if(Math.random() > 0.99){
+        if(Math.random() > 0.99 && !repel){
             const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x)
 
             enemy.velocity.x = Math.cos(angle)* enemy.speed;
             enemy.velocity.y = Math.sin(angle)* enemy.speed;
+        }else if(repel){
+            const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x)
+
+            enemy.velocity.x = Math.cos(angle)* -enemy.speed;
+            enemy.velocity.y = Math.sin(angle)* -enemy.speed;
         }
 
         // if enemy goes off screen remove it
@@ -152,11 +165,11 @@ function Update(){
 
         // end the game
         const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
-        if(dist - enemy.radius - player.radius < 0){
+        if(dist - enemy.radius - player.radius < 0 && !immunity){
             setTimeout(() => {
                 cancelAnimationFrame(frame);
                 endgame();
-            }, 0)
+            }, 30)
         }
 
         enemy.update();
@@ -182,7 +195,16 @@ function spawnEnemies(){
 }
 
 function useAbility(ability){
+    if(abilitys[ability] < 1){ return; }
+    abilitys[ability] --;
+
     if(ability == "stoptime"){ stoptime = true; setTimeout(() => {stoptime = false;}, 5000)}
+    else if(ability == "teleport"){ teleport = true; cancelAnimationFrame(frame); }
+    else if(ability == "repel"){ repel = true; setTimeout(() => {repel = false;}, 500)}
+    else if(ability == "immunity"){ immunity = true; setTimeout(() => {immunity = false;}, 2000); }
+    else if(ability == "speedx2"){ player.speed *= 2; setTimeout(() => {player.speed /= 2}, 5000); }
+
+    document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
 }
 
 window.onkeydown = (e) => {
@@ -232,6 +254,19 @@ window.onkeyup = (e) => {
     if(e.key.toLowerCase() == controls.right){
         player.dir[3] = false;
     }
+}
+
+window.onmousedown = (e) => {
+    if(!teleport){ return; }
+
+    player.x = e.x;
+    player.y = e.y;
+    player.radius = 0;
+    gsap.to(player, {
+        radius: 10
+    })
+    teleport = false;
+    Update();
 }
 
 
