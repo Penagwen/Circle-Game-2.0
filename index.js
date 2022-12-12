@@ -289,7 +289,7 @@ function endgame(){
     if(highscore < currPoints){
         highscore = currPoints;
         document.querySelector(".menu .score").innerHTML = `Highscore: ${highscore}`;
-        document.querySelector(".menu .score").style.animationName = "new-high-score"; 
+        document.querySelector(".menu .score").style.animationName = "new-high-score";
     }else{
         document.querySelector(".menu .score").style.animationName = ""; 
     }
