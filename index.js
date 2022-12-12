@@ -172,6 +172,15 @@ function Update(){
             }, 30)
         }
 
+
+        if(immunity){
+            const checkCollision = (p1x, p1y, r1, p2x, p2y, r2) => ((r1 + r2) ** 2 > (p1x - p2x) ** 2 + (p1y - p2y) ** 2)
+            if(checkCollision(enemy.x, enemy.y, enemy.radius, player.x, player.y, player.radius)){
+                enemy.velocity.x *= -1;
+                enemy.velocity.y *= -1;
+            }
+        }
+
         enemy.update();
     })
 }
@@ -179,7 +188,7 @@ function Update(){
 function spawnEnemies(){
     // set the spawn pos and get the direction towords the player
     let x, y;
-    let radius = Math.round(Math.random()*7)+7;
+    let radius = Math.round(Math.random()*4)+10;
     if(Math.random() < 0.5){
         x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
         y = Math.random() * canvas.height;
@@ -202,7 +211,7 @@ function useAbility(ability){
     else if(ability == "teleport" && !teleport){ teleport = true; cancelAnimationFrame(frame); }
     else if(ability == "repel" && !repel){ repel = true; setTimeout(() => {repel = false;}, 500)}
     else if(ability == "immunity" && !immunity){ immunity = true; setTimeout(() => {immunity = false;}, 2000); }
-    else if(ability == "speedx2"){ player.speed *= 2; setTimeout(() => {player.speed = 7}, 5000); }
+    else if(ability == "speedx2" && (player.speed == 7 || player.speed == 14)){ player.speed *= 2; setTimeout(() => {player.speed = 7}, 5000); }
 
     document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
 }
