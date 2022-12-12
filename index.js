@@ -121,7 +121,7 @@ function Update(){
 
     if(stoptime){ enemies.forEach((enemy) => {
         const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
-        if(dist - enemy.radius - player.radius < 0){
+        if(dist - enemy.radius - player.radius < 0 && !immunity){
             setTimeout(() => {
                 cancelAnimationFrame(frame);
                 endgame();
