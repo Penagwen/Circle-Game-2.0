@@ -78,6 +78,7 @@ class Player{
         }
 
         this.draw();
+        console.log(this.speed);
         // Check if the player is pressing two buttons at once
         this.x -= (this.dir[0] || this.dir[1]) && (this.dir[2] || this.dir[3]) ? this.velocity.x/1.5 : this.velocity.x;
         this.y -= (this.dir[0] || this.dir[1]) && (this.dir[2] || this.dir[3]) ? this.velocity.y/1.5 :this.velocity.y;
@@ -202,7 +203,7 @@ function useAbility(ability){
     else if(ability == "teleport"){ teleport = true; cancelAnimationFrame(frame); }
     else if(ability == "repel"){ repel = true; setTimeout(() => {repel = false;}, 500)}
     else if(ability == "immunity"){ immunity = true; setTimeout(() => {immunity = false;}, 2000); }
-    else if(ability == "speedx2"){ player.speed *= 2; setTimeout(() => {player.speed /= 2}, 5000); }
+    else if(ability == "speedx2"){ player.speed *= 2; setTimeout(() => {player.speed = 7}, 5000); }
 
     document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
 }
