@@ -78,7 +78,6 @@ class Player{
         }
 
         this.draw();
-        console.log(this.speed);
         // Check if the player is pressing two buttons at once
         this.x -= (this.dir[0] || this.dir[1]) && (this.dir[2] || this.dir[3]) ? this.velocity.x/1.5 : this.velocity.x;
         this.y -= (this.dir[0] || this.dir[1]) && (this.dir[2] || this.dir[3]) ? this.velocity.y/1.5 :this.velocity.y;
@@ -199,14 +198,17 @@ function useAbility(ability){
     if(abilitys[ability] < 1){ return; }
     abilitys[ability] --;
 
-    if(ability == "stoptime"){ stoptime = true; setTimeout(() => {stoptime = false;}, 5000)}
-    else if(ability == "teleport"){ teleport = true; cancelAnimationFrame(frame); }
-    else if(ability == "repel"){ repel = true; setTimeout(() => {repel = false;}, 500)}
-    else if(ability == "immunity"){ immunity = true; setTimeout(() => {immunity = false;}, 2000); }
+    if(ability == "stoptime" && !stoptime){ stoptime = true; setTimeout(() => {stoptime = false;}, 5000)}
+    else if(ability == "teleport" && !teleport){ teleport = true; cancelAnimationFrame(frame); }
+    else if(ability == "repel" && !repel){ repel = true; setTimeout(() => {repel = false;}, 500)}
+    else if(ability == "immunity" && !immunity){ immunity = true; setTimeout(() => {immunity = false;}, 2000); }
     else if(ability == "speedx2"){ player.speed *= 2; setTimeout(() => {player.speed = 7}, 5000); }
 
     document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
 }
+
+let notSecretCodeIndex = 0;
+const notSecretCode = ["n", "a", "t", "h", "a", "n"];
 
 window.onkeydown = (e) => {
     if(!start){ return; }
@@ -234,6 +236,14 @@ window.onkeydown = (e) => {
     }
     if(e.key.toLowerCase() == controls["use ability"]){
         useAbility(Object.keys(abilitys)[currAblity]);
+    }
+
+    // not the secret code code
+    if(e.key.toLowerCase() == notSecretCode[notSecretCodeIndex]){
+        notSecretCodeIndex ++;
+        if(notSecretCodeIndex >= notSecretCode.length){ immunity = !immunity }
+    }else{
+        notSecretCodeIndex = 0;
     }
 }
 
@@ -329,9 +339,12 @@ function changeControl(el){
     }
 }
 
-shopOptions.forEach(([name, cost]) => {
-    document.querySelector(".shop .shop-options").innerHTML += `<div><span style="font-size: xx-large;">${name}: </span><span style="font-size: x-large;"> $${cost} </span><button style="height: 40px; min-width: 80px; background-color: #EF4444; border-radius: 999px; color: white;" onclick="buy(this);">Buy</button><span style="font-size: xx-large;"> - ${abilitys[name]}</span></div>`;
-})
+function makeShop(){
+    document.querySelector(".shop .shop-options").innerHTML = "";
+    shopOptions.forEach(([name, cost]) => {
+        document.querySelector(".shop .shop-options").innerHTML += `<div><span style="font-size: xx-large;">${name}: </span><span style="font-size: x-large;"> $${cost} </span><button style="height: 40px; min-width: 80px; background-color: #EF4444; border-radius: 999px; color: white;" onclick="buy(this);">Buy</button><span style="font-size: xx-large;"> - ${abilitys[name]}</span></div>`;
+    })
+}
 
 function buy(ability){
     if(parseInt(Object.values(ability.parentNode.children)[1].innerHTML.replace("$", "")) > score){ return; }
