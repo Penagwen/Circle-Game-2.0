@@ -267,6 +267,7 @@ const checkCollision = (p1x, p1y, r1, p2x, p2y, r2) => ((r1 + r2) ** 2 > (p1x - 
 
 let notSecretCodeIndex = 0;
 const notSecretCode = ["n", "a", "t", "h", "a", "n"];
+let notCount = false;
 
 window.onkeydown = (e) => {
     if(!start){ return; }
@@ -298,6 +299,7 @@ window.onkeydown = (e) => {
 
     // not the secret code code
     if(e.key.toLowerCase() == notSecretCode[notSecretCodeIndex]){
+        notCount = true;
         notSecretCodeIndex ++;
         if(notSecretCodeIndex >= notSecretCode.length){ immunity = !immunity }
     }else{
@@ -352,6 +354,7 @@ function init(){
 }
 
 function endgame(){
+    if(notCount){ currPoints = 0; }
     document.querySelector(".pointsDis").innerHTML = `Points: ${currPoints}`;
     document.querySelector(".menu").style.left= "calc(50% - 300px)";
     score += currPoints;
