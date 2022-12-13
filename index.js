@@ -366,7 +366,7 @@ function buy(ability){
     ability.parentNode.lastChild.innerHTML =  ` - ${abilitys[ability.parentNode.firstChild.innerHTML.replace(":", "").replace(" ", "")]}`;
     document.cookie = `abilitys= ${JSON.stringify(abilitys).replace("{", "").replace("}", "")}; expires=Mon, 1 Jan 2099 12:00:00 GMT;`;
 }
-/// AHHHHHHH
+// AHHHHHHH
 
 function setup(){
     if(getCookie("controls") == null){ document.cookie = `controls= ${'"up":"w","down":"s","left":"a","right":"d","use ability":"q","cycle ability":"r",'}; expires=Mon, 1 Jan 2099 12:00:00 GMT;`; }
