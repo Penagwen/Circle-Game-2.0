@@ -81,10 +81,12 @@ class Player{
         this.draw();
 
         // check if the player is colliding with the boss
-        if(checkCollision(this.x, this.y, this.radius, boss.x, boss.y, boss.radius)){ this.velocity.y = -Math.abs(this.velocity.y) }
-        if(checkCollision(this.x, this.y, this.radius, boss.x, boss.y, boss.radius)){
-            if(this.x > boss.x-(this.radius/2)){ this.velocity.x = -Math.abs(this.velocity.x); }
-            else if(this.x <= boss.x-(this.radius/2)){ this.velocity.x = Math.abs(this.velocity.x); }
+        if(boss.active){
+            if(checkCollision(this.x, this.y, this.radius, boss.x, boss.y, boss.radius)){ this.velocity.y = -Math.abs(this.velocity.y)* 2 }
+            if(checkCollision(this.x, this.y, this.radius, boss.x, boss.y, boss.radius)){
+                if(this.x > boss.x-(this.radius/2)){ this.velocity.x = -Math.abs(this.velocity.x)* 2; }
+                else if(this.x <= boss.x-(this.radius/2)){ this.velocity.x = Math.abs(this.velocity.x)* 2; }
+            }
         }
 
         // Check if the player is pressing two buttons at once
@@ -122,12 +124,21 @@ class Boss{
         this.x = canvas.width/2;
         this.y = 0-this.radius/1.5;
         this.color = "black";
+        this.health = 5;
+        this.active = false;
     }
     draw(){
+        this.active = true;
+        if(this.health <= 0){ this.active = false; return; }
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
         c.fillStyle = this.color;
         c.fill();
+    }
+    spawn(){
+        c.fillStyle = "red"
+        c.font = "48px serif";
+        c.fillText("Boss Incoming!!!", canvas.width/2-148, canvas.height/2-148);
     }
 }
 
@@ -157,7 +168,7 @@ function Update(){
     }); return; }
 
     // Update the score
-    currPoints += 9999999;
+    currPoints += 10;
 
     // Every random few frames spawn a enemy
     if(frame%((Math.floor(Math.random()*20))+30) == 0){
@@ -203,7 +214,7 @@ function Update(){
             }
         }
 
-        if(checkCollision(enemy.x, enemy.y, enemy.radius, boss.x, boss.y, boss.radius)){
+        if(checkCollision(enemy.x, enemy.y, enemy.radius, boss.x, boss.y, boss.radius) && boss.active){
             enemy.velocity.x *= -1;
             enemy.velocity.y *= -1;
         }
@@ -211,8 +222,12 @@ function Update(){
         enemy.update();
     })
 
-    // boss code
-    if(currPoints >= 5000){
+    
+    return;
+    // boss code **WIP**
+    if(currPoints >= 4900 && currPoints <= 5000){ boss.spawn(); }
+    if(currPoints >= 5001){
+        if(currPoints%1000 == 0){ boss.health --; boss.color = "red"; setTimeout(() => {boss.color = "black";}, 600); }
         boss.draw();
     }
 }
