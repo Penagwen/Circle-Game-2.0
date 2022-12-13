@@ -157,7 +157,7 @@ function Update(){
     }); return; }
 
     // Update the score
-    currPoints ++;
+    currPoints += 9999999;
 
     // Every random few frames spawn a enemy
     if(frame%((Math.floor(Math.random()*20))+30) == 0){
@@ -340,7 +340,7 @@ function endgame(){
     document.querySelector(".pointsDis").innerHTML = `Points: ${currPoints}`;
     document.querySelector(".menu").style.left= "calc(50% - 300px)";
     score += currPoints;
-    if(highscore < currPoints){
+    if(highscore <= currPoints){
         highscore = currPoints;
         document.querySelector(".menu .score").innerHTML = `Highscore: ${highscore}`;
         document.querySelector(".menu .score").style.animationName = "new-high-score";
