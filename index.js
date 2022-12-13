@@ -168,7 +168,7 @@ function Update(){
     }); return; }
 
     // Update the score
-    currPoints += 10;
+    currPoints ++;
 
     // Every random few frames spawn a enemy
     if(frame%((Math.floor(Math.random()*20))+30) == 0){
@@ -222,7 +222,7 @@ function Update(){
         enemy.update();
     })
 
-    
+
     return;
     // boss code **WIP**
     if(currPoints >= 4900 && currPoints <= 5000){ boss.spawn(); }
