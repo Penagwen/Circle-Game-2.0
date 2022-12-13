@@ -10,6 +10,7 @@ setup();
 // Game Variables
 let player;
 let enemies;
+let boss;
 let controls = eval('({' + getCookie("controls") + '})');
 let abilitys = eval('({' + getCookie("abilitys") + '})');
 let currPoints = 0;
@@ -78,6 +79,14 @@ class Player{
         }
 
         this.draw();
+
+        // check if the player is colliding with the boss
+        if(checkCollision(this.x, this.y, this.radius, boss.x, boss.y, boss.radius)){ this.velocity.y = -Math.abs(this.velocity.y) }
+        if(checkCollision(this.x, this.y, this.radius, boss.x, boss.y, boss.radius)){
+            if(this.x > boss.x-(this.radius/2)){ this.velocity.x = -Math.abs(this.velocity.x); }
+            else if(this.x <= boss.x-(this.radius/2)){ this.velocity.x = Math.abs(this.velocity.x); }
+        }
+
         // Check if the player is pressing two buttons at once
         this.x -= (this.dir[0] || this.dir[1]) && (this.dir[2] || this.dir[3]) ? this.velocity.x/1.5 : this.velocity.x;
         this.y -= (this.dir[0] || this.dir[1]) && (this.dir[2] || this.dir[3]) ? this.velocity.y/1.5 :this.velocity.y;
@@ -104,6 +113,21 @@ class Enemy{
         this.draw();
         this.x -= this.velocity.x;
         this.y -= this.velocity.y;
+    }
+}
+
+class Boss{
+    constructor(){
+        this.radius = 500;
+        this.x = canvas.width/2;
+        this.y = 0-this.radius/1.5;
+        this.color = "black";
+    }
+    draw(){
+        c.beginPath();
+        c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
+        c.fillStyle = this.color;
+        c.fill();
     }
 }
 
@@ -172,17 +196,25 @@ function Update(){
             }, 30)
         }
 
-
         if(immunity){
-            const checkCollision = (p1x, p1y, r1, p2x, p2y, r2) => ((r1 + r2) ** 2 > (p1x - p2x) ** 2 + (p1y - p2y) ** 2)
             if(checkCollision(enemy.x, enemy.y, enemy.radius, player.x, player.y, player.radius)){
                 enemy.velocity.x *= -1;
                 enemy.velocity.y *= -1;
             }
         }
 
+        if(checkCollision(enemy.x, enemy.y, enemy.radius, boss.x, boss.y, boss.radius)){
+            enemy.velocity.x *= -1;
+            enemy.velocity.y *= -1;
+        }
+
         enemy.update();
     })
+
+    // boss code
+    if(currPoints >= 5000){
+        boss.draw();
+    }
 }
 
 function spawnEnemies(){
@@ -211,10 +243,12 @@ function useAbility(ability){
     else if(ability == "teleport" && !teleport){ teleport = true; cancelAnimationFrame(frame); }
     else if(ability == "repel" && !repel){ repel = true; setTimeout(() => {repel = false;}, 500)}
     else if(ability == "immunity" && !immunity){ immunity = true; setTimeout(() => {immunity = false;}, 2000); }
-    else if(ability == "speedx2" && (player.speed == 7 || player.speed == 14)){ player.speed *= 2; setTimeout(() => {player.speed = 7}, 5000); }
+    else if(ability == "speedx2" && player.speed == 7){ player.speed *= 2; setTimeout(() => {player.speed = 7}, 5000); }
 
     document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
 }
+
+const checkCollision = (p1x, p1y, r1, p2x, p2y, r2) => ((r1 + r2) ** 2 > (p1x - p2x) ** 2 + (p1y - p2y) ** 2)
 
 let notSecretCodeIndex = 0;
 const notSecretCode = ["n", "a", "t", "h", "a", "n"];
@@ -296,6 +330,7 @@ function init(){
     document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
     player = new Player(canvas.width/2, canvas.height/2, 10, "red", {x:0, y:0});
     enemies = [];
+    boss = new Boss();
     currPoints = 0;
     start = true;
     Update();
