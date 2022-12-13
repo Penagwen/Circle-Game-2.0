@@ -21,6 +21,8 @@ let teleport = false;
 let stoptime = false;
 let repel = false;
 let immunity = false;
+// so if it is another ability is active you can use it 
+let speedx2 = false;
 
 
 
@@ -251,14 +253,15 @@ function spawnEnemies(){
 }
 
 function useAbility(ability){
-    if(abilitys[ability] < 1){ return; }
+    if(abilitys[ability] < 1 || eval(ability) || player.speed > 7){ return; }
+
     abilitys[ability] --;
 
-    if(ability == "stoptime" && !stoptime){ stoptime = true; setTimeout(() => {stoptime = false;}, 5000)}
-    else if(ability == "teleport" && !teleport){ teleport = true; cancelAnimationFrame(frame); }
-    else if(ability == "repel" && !repel){ repel = true; setTimeout(() => {repel = false;}, 500)}
-    else if(ability == "immunity" && !immunity){ immunity = true; setTimeout(() => {immunity = false;}, 2000); }
-    else if(ability == "speedx2" && player.speed == 7){ player.speed *= 2; setTimeout(() => {player.speed = 7}, 5000); }
+    if(ability == "stoptime"){ stoptime = true; setTimeout(() => {stoptime = false;}, 5000)}
+    else if(ability == "teleport"){ teleport = true; cancelAnimationFrame(frame); }
+    else if(ability == "repel"){ repel = true; setTimeout(() => {repel = false;}, 500)}
+    else if(ability == "immunity"){ immunity = true; setTimeout(() => {immunity = false;}, 2000); }
+    else if(ability == "speedx2"){ player.speed *= 2; setTimeout(() => {player.speed = 7}, 5000); }
 
     document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
 }
