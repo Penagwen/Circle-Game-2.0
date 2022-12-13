@@ -310,7 +310,7 @@ function endgame(){
         document.querySelector(".menu .score").innerHTML = `Highscore: ${highscore}`;
         document.querySelector(".menu .score").style.animationName = "new-high-score";
     }else{
-        document.querySelector(".menu .score").style.animationName = ""; 
+        document.querySelector(".menu .score").style.animationName = "nothing"; 
     }
     document.querySelector(".menu .points").innerHTML = `Points: ${score}`;
 
