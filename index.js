@@ -353,6 +353,7 @@ function init(){
     boss = new Boss();
     currPoints = 0;
     start = true;
+    notCount = false;
     Update();
 }
 
