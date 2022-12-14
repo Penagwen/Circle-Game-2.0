@@ -10,6 +10,7 @@ setup();
 // Game Variables
 let player;
 let enemies;
+let particals;
 let boss;
 let controls = eval('({' + getCookie("controls") + '})');
 let abilitys = eval('({' + getCookie("abilitys") + '})');
@@ -84,10 +85,17 @@ class Player{
 
         // check if the player is colliding with the boss
         if(boss.active){
-            if(checkCollision(this.x, this.y, this.radius, boss.x, boss.y, boss.radius)){ this.velocity.y = -Math.abs(this.velocity.y)* 2 }
+            if(checkCollision(this.x, this.y, this.radius, boss.x, boss.y, boss.radius)){ 
+                if(boss.vulnerable){ boss.health --; boss.color = "red"; boss.vulnerable = false; setTimeout(() => {boss.color = "black";}, 600); }
+                this.velocity.y = -Math.abs(this.velocity.y)* 2;
+            }
             if(checkCollision(this.x, this.y, this.radius, boss.x, boss.y, boss.radius)){
-                if(this.x > boss.x-(this.radius/2)){ this.velocity.x = -Math.abs(this.velocity.x)* 2; }
-                else if(this.x <= boss.x-(this.radius/2)){ this.velocity.x = Math.abs(this.velocity.x)* 2; }
+                if(boss.vulnerable){ boss.health --; boss.color = "red"; boss.vulnerable = false; setTimeout(() => {boss.color = "black";}, 600); }
+                if(this.x > boss.x-(this.radius/2)){
+                     this.velocity.x = -Math.abs(this.velocity.x)* 2;
+                }else if(this.x <= boss.x-(this.radius/2)){ 
+                    this.velocity.x = Math.abs(this.velocity.x)* 2; 
+                }
             }
         }
 
@@ -128,19 +136,64 @@ class Boss{
         this.color = "black";
         this.health = 5;
         this.active = false;
+        this.vulnerable = false;
     }
     draw(){
         this.active = true;
         if(this.health <= 0){ this.active = false; return; }
+        // boss
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
-        c.fillStyle = this.color;
+        c.fillStyle = this.vulnerable ? "cyan" : this.color;
         c.fill();
     }
     spawn(){
         c.fillStyle = "red"
         c.font = "48px serif";
         c.fillText("Boss Incoming!!!", canvas.width/2-148, canvas.height/2-148);
+    }
+    startBattle(){
+        enemies = [];
+        player.x = canvas.width/2;
+        player.y = canvas.height/2;
+
+    }
+}
+
+const friction = 0.98
+class Partical{
+    constructor(x, y, radius, color, velocity){
+        this.x = x
+        this.y = y
+        this.radius = radius
+        this.color = color
+        this.velocity = velocity
+        this.alpha = 1
+    }
+    
+    draw(){
+        c.save()
+        c.globalAlpha = this.alpha
+        c.beginPath()
+        c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false)
+        c.fillStyle = this.color
+        c.fill()
+        c.restore()
+    }
+    
+    explode(){
+        for(let i =0; i < Math.floor(Math.random()*25)+25; i++){
+            particals.push(new Partical(player.x, player.y, Math.random()*2, "red", {x: (Math.random()-0.5)*(Math.random()*5), y: (Math.random()-0.5)*(Math.random()*5)}))
+        }
+    }
+
+    update(){
+        this.draw()
+        this.velocity.x *= friction
+        this.velocity.y *= friction
+        this.x = this.x + this.velocity.x
+        this.y = this.y + this.velocity.y
+        this.alpha -= 0.01
     }
 }
 
@@ -224,12 +277,12 @@ function Update(){
         enemy.update();
     })
 
-
     return;
     // boss code **WIP**
     if(currPoints >= 4900 && currPoints <= 5000){ boss.spawn(); }
+    if(currPoints == 5000){ boss.startBattle() }
     if(currPoints >= 5001){
-        if(currPoints%1000 == 0){ boss.health --; boss.color = "red"; setTimeout(() => {boss.color = "black";}, 600); }
+        if(currPoints%1000 == 0){ boss.vulnerable = true; }
         boss.draw();
     }
 }
@@ -350,6 +403,7 @@ function init(){
     document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
     player = new Player(canvas.width/2, canvas.height/2, 10, "red", {x:0, y:0});
     enemies = [];
+    particals = [];
     boss = new Boss();
     currPoints = 0;
     start = true;
