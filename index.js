@@ -223,7 +223,7 @@ function Update(){
     }); return; }
 
     // Update the score
-    currPoints ++;
+    currPoints += 2;
 
     // Every random few frames spawn a enemy
     if(frame%((Math.floor(Math.random()*20))+30) == 0){
