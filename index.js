@@ -310,8 +310,6 @@ function Update(){
         enemy.update();
     })
 
-    //return;
-    // boss code **WIP**
     if(currPoints >= 4900 && currPoints <= 5000){ boss.spawn(); }
     if(currPoints == 5000){ boss.startBattle() }
     if(currPoints >= 5001){
