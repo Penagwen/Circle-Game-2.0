@@ -10,7 +10,6 @@ setup();
 // Game Variables
 let player;
 let enemies;
-let particals;
 let boss;
 let controls = eval('({' + getCookie("controls") + '})');
 let abilitys = eval('({' + getCookie("abilitys") + '})');
@@ -175,43 +174,6 @@ class Boss{
     }
 }
 
-const friction = 0.98
-class Partical{
-    constructor(x, y, radius, color, velocity){
-        this.x = x
-        this.y = y
-        this.radius = radius
-        this.color = color
-        this.velocity = velocity
-        this.alpha = 1
-    }
-    
-    draw(){
-        c.save()
-        c.globalAlpha = this.alpha
-        c.beginPath()
-        c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false)
-        c.fillStyle = this.color
-        c.fill()
-        c.restore()
-    }
-    
-    explode(){
-        for(let i =0; i < Math.floor(Math.random()*25)+25; i++){
-            particals.push(new Partical(player.x, player.y, Math.random()*2, "red", {x: (Math.random()-0.5)*(Math.random()*5), y: (Math.random()-0.5)*(Math.random()*5)}))
-        }
-    }
-
-    update(){
-        this.draw()
-        this.velocity.x *= friction
-        this.velocity.y *= friction
-        this.x = this.x + this.velocity.x
-        this.y = this.y + this.velocity.y
-        this.alpha -= 0.01
-    }
-}
-
 let frame;
 function Update(){
     // clear the screen
@@ -245,7 +207,7 @@ function Update(){
         spawnEnemies();
     }
 
-    if(boss.active && frame%((Math.floor(Math.random()*1100))+900) == 0){
+    if(boss.active && frame%((Math.floor(Math.random()*700))+800) == 0){
         // summon giant enemy
         let x, y;
         let radius = Math.round(Math.random()*4)+150;
@@ -434,7 +396,6 @@ function init(){
     document.querySelector(".abilityDis").innerHTML = `Ability: ${Object.keys(abilitys)[currAblity]} - ${abilitys[Object.keys(abilitys)[currAblity]]}`;
     player = new Player(canvas.width/2, canvas.height/2, 10, "red", {x:0, y:0});
     enemies = [];
-    particals = [];
     boss = new Boss();
     currPoints = 0;
     start = true;
