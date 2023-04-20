@@ -99,6 +99,13 @@ class Player{
             }
         }
 
+        if(this.x - this.velocity.x - this.radius/2 < 0 || this.x - this.velocity.x + this.radius/2 > canvas.width){
+            this.velocity.x = 0;
+        }
+        if(this.y - this.velocity.y - this.radius/2 < 0 || this.y - this.velocity.y + this.radius/2 > canvas.height){
+            this.velocity.y = 0
+        }
+
         // Check if the player is pressing two buttons at once
         this.x -= (this.dir[0] || this.dir[1]) && (this.dir[2] || this.dir[3]) ? this.velocity.x/1.5 : this.velocity.x;
         this.y -= (this.dir[0] || this.dir[1]) && (this.dir[2] || this.dir[3]) ? this.velocity.y/1.5 :this.velocity.y;
@@ -106,11 +113,11 @@ class Player{
 }
 
 class Enemy{
-    constructor(x, y, velocity, type, speed){
+    constructor(x, y, velocity, type, speed, radius){
         this.x = x;
         this.y = y;
         this.color = "black";
-        this.radius = (Math.random()*8)+4;
+        this.radius = radius;
         this.velocity = velocity;
         this.type = type;
         this.speed = speed;
@@ -142,9 +149,15 @@ class Boss{
         this.active = true;
         if(this.health <= 0){ this.active = false; return; }
         // boss
+        if(!this.vulnerable){
+            c.beginPath();
+            c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
+            c.fillStyle = "cyan";
+            c.fill();
+        }
         c.beginPath();
-        c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
-        c.fillStyle = this.vulnerable ? "cyan" : this.color;
+        c.arc(this.x, this.y, this.radius-15, 0, Math.PI*2, false);
+        c.fillStyle = this.color;
         c.fill();
     }
     spawn(){
@@ -156,6 +169,8 @@ class Boss{
         enemies = [];
         player.x = canvas.width/2;
         player.y = canvas.height/2;
+
+
 
     }
 }
@@ -230,11 +245,29 @@ function Update(){
         spawnEnemies();
     }
 
+    if(boss.active && frame%((Math.floor(Math.random()*1100))+900) == 0){
+        // summon giant enemy
+        let x, y;
+        let radius = Math.round(Math.random()*4)+150;
+        if(Math.random() < 0.5){
+            x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
+            y = Math.random() * canvas.height;
+        }else{
+            x = Math.random() * canvas.width;
+            y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
+        }
+        const angle = Math.atan2(player.y - y, player.x - x);
+        const velocityX = Math.cos(angle) * -(4 - radius/50),
+            velocityY = Math.sin(angle) * -(4 - radius/50);
+
+        enemies.push(new Enemy(x, y, {x:velocityX, y:velocityY}, "giant", -(4 - radius/50), radius));
+    }
+
     enemies.forEach((enemy, index) => {
         // if stop time is not active set the color to normal
         enemy.color = "black";
         // The chance for the enemy to turn towords the player
-        if(Math.random() > 0.99 && !repel){
+        if(Math.random() > 0.99 && !repel && enemy.type != "giant"){
             const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x)
 
             enemy.velocity.x = Math.cos(angle)* enemy.speed;
@@ -277,7 +310,7 @@ function Update(){
         enemy.update();
     })
 
-    return;
+    //return;
     // boss code **WIP**
     if(currPoints >= 4900 && currPoints <= 5000){ boss.spawn(); }
     if(currPoints == 5000){ boss.startBattle() }
@@ -302,7 +335,7 @@ function spawnEnemies(){
     const velocityX = Math.cos(angle)* -(4 - radius/6),
         velocityY = Math.sin(angle)* -(4 - radius/6);
 
-    enemies.push(new Enemy(x, y, {x:velocityX, y:velocityY}, "normal", -(4 - radius/6)));
+    enemies.push(new Enemy(x, y, {x:velocityX, y:velocityY}, "normal", -(4 - radius/6), radius));
 }
 
 function useAbility(ability){
