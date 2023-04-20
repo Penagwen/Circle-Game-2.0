@@ -219,9 +219,9 @@ function Update(){
     if(frame%((Math.floor(Math.random()*20))+30) == 0){
         spawnEnemies();
     }
+    
 
     if(boss.active && Date.now()%((Math.floor(Math.random()*700))+800) == 0){
-        console.log("test");
         // summon giant enemy
         let x, y;
         let radius = Math.round(Math.random()*4)+150;
