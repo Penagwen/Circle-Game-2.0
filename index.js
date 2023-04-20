@@ -400,6 +400,11 @@ function init(){
     currPoints = 0;
     start = true;
     notCount = false;
+    teleport = false;
+    stoptime = false;
+    repel = false;
+    immunity = false;
+    speedx2 = false;
     Update();
 }
 
