@@ -156,7 +156,7 @@ class Boss{
         }
         c.beginPath();
         c.arc(this.x, this.y, this.radius-15, 0, Math.PI*2, false);
-        c.fillStyle = (timestop) ? "white" : this.color;
+        c.fillStyle = (stoptime) ? "white" : this.color;
         c.fill();
     }
     spawn(){
@@ -168,9 +168,6 @@ class Boss{
         enemies = [];
         player.x = canvas.width/2;
         player.y = canvas.height/2;
-
-
-
     }
 }
 
