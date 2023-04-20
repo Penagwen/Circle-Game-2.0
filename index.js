@@ -156,7 +156,7 @@ class Boss{
         }
         c.beginPath();
         c.arc(this.x, this.y, this.radius-15, 0, Math.PI*2, false);
-        c.fillStyle = this.color;
+        c.fillStyle = (timestop) ? "white" : this.color;
         c.fill();
     }
     spawn(){
