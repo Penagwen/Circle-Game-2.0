@@ -172,7 +172,6 @@ class Boss{
 
         c.beginPath();
         c.arc(this.x, this.y, this.radius-15, 0, Math.PI*2, false);
-        console.log((stoptime) ? "white" : this.color);
         c.fillStyle = (stoptime) ? "white" : this.color;
         c.fill();
     }
@@ -221,7 +220,8 @@ function Update(){
         spawnEnemies();
     }
 
-    if(boss.active && frame%((Math.floor(Math.random()*700))+800) == 0){
+    if(boss.active && Date.now()%((Math.floor(Math.random()*700))+800) == 0){
+        console.log("test");
         // summon giant enemy
         let x, y;
         let radius = Math.round(Math.random()*4)+150;
