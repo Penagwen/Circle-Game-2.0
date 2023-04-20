@@ -112,16 +112,30 @@ class Player{
 }
 
 class Enemy{
-    constructor(x, y, velocity, type, speed, radius){
+    constructor(x, y, velocity, type, speed, radius, squareSize){
         this.x = x;
         this.y = y;
         this.color = "black";
-        this.radius = radius;
+        this.radius = radius ?? 0;
+        this.squareSize = squareSize ?? 0;
         this.velocity = velocity;
         this.type = type;
         this.speed = speed;
+        if(this.type == "square"){
+            this.countdown = Math.round(Math.random()*2000)+3000; //ms
+            this.startTime = Date.now();
+        }
     }
     draw(){
+        if(this.type == "square"){
+            if(Date.now() - this.startTime > this.countdown-500 && (Date.now() - this.startTime)%100 < 50){
+                c.fillStyle = "red";
+            }else{
+                c.fillStyle = this.color;
+            }
+            c.fillRect(this.x, this.y, this.squareSize, this.squareSize);
+            return;
+        }
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
         c.fillStyle = this.color;
@@ -129,6 +143,7 @@ class Enemy{
     }
     update(){
         this.draw();
+
         this.x -= this.velocity.x;
         this.y -= this.velocity.y;
     }
@@ -154,8 +169,10 @@ class Boss{
             c.fillStyle = "cyan";
             c.fill();
         }
+
         c.beginPath();
         c.arc(this.x, this.y, this.radius-15, 0, Math.PI*2, false);
+        console.log((stoptime) ? "white" : this.color);
         c.fillStyle = (stoptime) ? "white" : this.color;
         c.fill();
     }
@@ -266,6 +283,21 @@ function Update(){
             enemy.velocity.y *= -1;
         }
 
+        if(enemy.type == "square"){
+            if(Date.now() - enemy.startTime > enemy.countdown){
+                enemies.forEach((enemyInRadius) => {
+                    if(Math.hypot(enemy.x - enemyInRadius.x, enemy.y - enemyInRadius.y) < 250){
+                        const angle = Math.atan2(enemy.y - enemyInRadius.y, enemy.x - enemyInRadius.x);
+                        const velocityX = Math.cos(angle)* 6-Math.min((Math.hypot(enemy.x - enemyInRadius.x, enemy.y - enemyInRadius.y))/75, 6),
+                            velocityY = Math.sin(angle)* 6-Math.min((Math.hypot(enemy.x - enemyInRadius.x, enemy.y - enemyInRadius.y))/75, 6);
+                        enemyInRadius.velocity.x += velocityX;
+                        enemyInRadius.velocity.y += velocityY;
+                    }
+                });
+                enemies.splice(index, 1);
+            }
+        }
+
         enemy.update();
     })
 
@@ -281,6 +313,7 @@ function spawnEnemies(){
     // set the spawn pos and get the direction towords the player
     let x, y;
     let radius = Math.round(Math.random()*4)+10;
+    let squareSize = (Math.round(Math.random()*4)+10)*2;
     if(Math.random() < 0.5){
         x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
         y = Math.random() * canvas.height;
@@ -292,7 +325,14 @@ function spawnEnemies(){
     const velocityX = Math.cos(angle)* -(4 - radius/6),
         velocityY = Math.sin(angle)* -(4 - radius/6);
 
-    enemies.push(new Enemy(x, y, {x:velocityX, y:velocityY}, "normal", -(4 - radius/6), radius));
+    let type;
+    let chance = Math.random();
+    if(chance < 0.95){
+        type = "normal";
+    }else{
+        type = "square";
+    }
+    enemies.push(new Enemy(x, y, {x:velocityX, y:velocityY}, type, -(4 - radius/6), radius, squareSize, squareSize));
 }
 
 function useAbility(ability){
