@@ -24,7 +24,8 @@ let immunity = false;
 // so if it is another ability is active you can use it 
 let speedx2 = false;
 
-
+const skins = ["red", "blue", "white", "purple", "orange"]; // more later
+let equippedSkin = skins[eval(getCookie("skin"))];
 
 // Classes
 class Player{
@@ -49,8 +50,13 @@ class Player{
         }
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
-        c.fillStyle = this.color;
-        c.fill();
+        if(equippedSkin == "white"){
+            c.strokeStyle = "black";
+            c.stroke();
+        }else{
+            c.fillStyle = equippedSkin;
+            c.fill();
+        }
     }
     update(){
         // Player movement
@@ -513,11 +519,33 @@ function buy(ability){
 }
 // AHHHHHHH
 
+const displaySkinCanvas = document.querySelector(".displaySkin");
+const displaySkinC = displaySkinCanvas.getContext("2d");
+displaySkinCanvas.width = 200;
+displaySkinCanvas.height = 350;
+function switchSkin(dir){
+    if(skins.indexOf(equippedSkin)+dir < 0){ equippedSkin = skins[skins.length-1]; }
+    else if(skins.indexOf(equippedSkin)+dir > skins.length-1){ equippedSkin = skins[0]; }
+    else{ equippedSkin = skins[skins.indexOf(equippedSkin)+dir]; }
+    document.cookie = `skin = ${skins.indexOf(equippedSkin)}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`;
+    displaySkinC.fillStyle = "black";
+    displaySkinC.fillRect(0, 0, displaySkinCanvas.width, displaySkinCanvas.height);
+    displaySkinC.beginPath();
+    displaySkinC.arc(100, 175, 90, 0, Math.PI*2, false);
+    if(equippedSkin == "white"){
+        displaySkinC.strokeStyle = "black";
+        displaySkinC.stroke();
+    }
+    displaySkinC.fillStyle = equippedSkin;
+    displaySkinC.fill();
+}
+
 function setup(){
     if(getCookie("controls") == null){ document.cookie = `controls= ${'"up":"w","down":"s","left":"a","right":"d","use ability":"q","cycle ability":"r",'}; expires=Mon, 1 Jan 2099 12:00:00 GMT;`; }
     if(getCookie("score") == null){ document.cookie = `score= 0; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
     if(getCookie("high") == null){ document.cookie = `high= 0; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
     if(getCookie("abilitys") == null){ document.cookie = `abilitys= ${'stoptime: 0,teleport: 0,repel: 0,immunity: 0,speedx2: 0,'}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
+    if(getCookie("skin") == null){ document.cookie = `skin=0; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; }
 
     document.querySelector(".menu .points").innerHTML = `Points: ${getCookie("score")}`;
     document.querySelector(".menu .score").innerHTML = `Highscore: ${getCookie("high")}`;

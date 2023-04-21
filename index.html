@@ -3,7 +3,7 @@
 <head>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Manrope&display=swap');
-
+        
         body {
             margin: 0px;
             overflow: hidden;
@@ -12,7 +12,7 @@
             filter: invert(0%);
         }
 
-        .menu, .settingsMenu, .shop {
+        .menu, .settingsMenu, .shop, .closetScreen {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -90,6 +90,34 @@
             color: white;
         }
 
+        .arrowleft .material-symbols-outlined {
+            font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 48;
+
+            position: absolute;
+            top: 50%;
+            left: 15%;
+
+            color: white;
+        }
+        
+        .arrowright .material-symbols-outlined {
+            font-variation-settings:'FILL' 1,'wght' 300,'GRAD' 0,'opsz' 48;
+            position: absolute;
+            top: 50%;
+            right: 15%;
+
+            color: white;
+        }
+
+        .closet .material-symbols-outlined {
+            font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 48;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+
+            color: white;
+        }
+
         .material-symbols-outlined:hover {
             color: #EEE;
         }
@@ -136,6 +164,7 @@
 
     <div class="menu">
         <div class="settings"><span class="material-symbols-outlined" onclick="document.querySelector('.settingsMenu').style.visibility = 'visible';">settings</span></div>
+        <div class="closet"><span class="material-symbols-outlined" onclick="document.querySelector('.closetScreen').style.visibility = 'visible'; switchSkin(0);">checkroom</span></div>
         <span class="score">Highscore: 0</span>
         <span class="points">Points: 0</span>
         <button class="startBtn">Start</button>
@@ -151,6 +180,12 @@
         <span style="text-decoration: underline; color: white; font-size: xxx-large;">Shop</span>
         <span class="shopPointsDis" style="color: white; font-size: large;">Points: 0</span>
         <div class="shop-options" style="color: white;">    </div>
+    </div>
+    <div class="closetScreen" style="visibility: hidden;">
+        <div class="arrowback" onclick="document.querySelector('.closetScreen').style.visibility = 'hidden';"><span class="material-symbols-outlined" onclick="document.querySelector('.closetScreen').style.visibility = 'hidden';">arrow_back</span></div>
+        <div class="arrowleft" onclick="switchSkin(-1);"><span class="material-symbols-outlined">arrow_back</span></div>
+        <div class="arrowright" onclick="switchSkin(1);"><span class="material-symbols-outlined">arrow_forward</span></div>
+        <div class="skin"><canvas class="displaySkin"></canvas></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
