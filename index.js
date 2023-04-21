@@ -498,7 +498,7 @@ let score = parseInt(getCookie("score"));
 const shopOptions = [["stoptime", 800], ["teleport", 1000], ["repel", 600], ["immunity", 800], ["speedx2", 400]];
 
 
-// Menu Javascript
+// Menu Javascript (just don't look pls)
 
 document.querySelector(".startBtn").onmousedown = (e) => {
     document.querySelector(".menu").style.left= "calc(100% + 600px)";
@@ -570,17 +570,18 @@ function unlockSkins(){
     let score;
     try { score = highscore; } 
     catch (error) { score = getCookie("high"); }
-
-    if(score > 1000){ skins.push(["#1BFFFF", "#2E3192"]); /* Ocean blue */ }
-    if(score > 2000){ skins.push(["#FBB03B", "#D4145A"]); /* Sanguine */ }
-    if(score > 3000){ skins.push(["#FCEE21", "#009245"]); /* Luscious Lime */ }
-    if(score > 4000){ skins.push(["#ED1E79", "#662D8C"]); /* Purple Lake */ }
-    if(score > 5000){ skins.push(["#FFDDE1", "#EE9CA7"]); /* Piglet */ }
-    if(score > 6000){ skins.push(["#516395", "#614385"]); /* Kashmir */ }
-    if(score > 7000){ skins.push(["#00CDAC", "#02AABD"]); /* Green Beach */ }
-    if(score > 8000){ skins.push(["#DD2476", "#FF512F"]); /* Bloody Mary */ }
-    if(score > 9000){ skins.push(["#FFC371", "#FF5F6D"]); /* Sweet Morning */ }
-    if(score > 10000){ skins.push(["#38EF7D", "#11998E"]); /* Quepal */ }
+    console.log(score);
+    if(score > 1000 && skins.length < 6){ skins.push(["#1BFFFF", "#2E3192"]); /* Ocean blue */ }
+    if(score > 2000 && skins.length < 7){ skins.push(["#FBB03B", "#D4145A"]); /* Sanguine */ }
+    if(score > 3000 && skins.length < 8){ skins.push(["#FCEE21", "#009245"]); /* Luscious Lime */ }
+    if(score > 4000 && skins.length < 9){ skins.push(["#ED1E79", "#662D8C"]); /* Purple Lake */ }
+    if(score > 5000 && skins.length < 10){ skins.push(["#FFDDE1", "#EE9CA7"]); /* Piglet */ }
+    if(score > 6000 && skins.length < 11){ skins.push(["#516395", "#614385"]); /* Kashmir */ }
+    if(score > 7000 && skins.length < 12){ skins.push(["#00CDAC", "#02AABD"]); /* Green Beach */ }
+    if(score > 8000 && skins.length < 13){ skins.push(["#DD2476", "#FF512F"]); /* Bloody Mary */ }
+    if(score > 9000 && skins.length < 14){ skins.push(["#FFC371", "#FF5F6D"]); /* Sweet Morning */ }
+    if(score > 10000 && skins.length < 15){ skins.push(["#38EF7D", "#11998E"]); /* Quepal */ }
+    console.log(skins);
 }
 
 function setup(){
