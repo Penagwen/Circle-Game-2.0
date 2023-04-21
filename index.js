@@ -341,12 +341,18 @@ function spawnEnemies(){
     enemies.push(new Enemy(x, y, {x:velocityX, y:velocityY}, type, -(4 - radius/6), radius, squareSize, squareSize));
 }
 
+function pauseEnemies(){
+    enemies.filter((enemy) => (enemy.type == "square")).forEach((squareEnemy) => {
+        squareEnemy.startTime += 5000;
+    });
+}
+
 function useAbility(ability){
     if(abilitys[ability] < 1 || eval(ability) || player.speed > 7){ return; }
 
     abilitys[ability] --;
 
-    if(ability == "stoptime"){ stoptime = true; setTimeout(() => {stoptime = false;}, 5000)}
+    if(ability == "stoptime"){ stoptime = true; pauseEnemies(); setTimeout(() => {stoptime = false;}, 5000)}
     else if(ability == "teleport"){ teleport = true; cancelAnimationFrame(frame); }
     else if(ability == "repel"){ repel = true; setTimeout(() => {repel = false;}, 500)}
     else if(ability == "immunity"){ immunity = true; setTimeout(() => {immunity = false;}, 2000); }
@@ -432,6 +438,11 @@ window.onmousedown = (e) => {
     Update();
 }
 
+document.onkeydown = function (t) {
+    if(t.which == 9){
+        return false;
+    }
+}
 
 function init(){
     canvas.width = window.innerWidth;
