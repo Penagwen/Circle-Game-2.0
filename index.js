@@ -24,8 +24,11 @@ let immunity = false;
 // so if it is another ability is active you can use it 
 let speedx2 = false;
 
-const skins = ["red", "blue", "white", "purple", "orange"]; // more later
+const skins = ["red", "blue", "white", "purple", "orange"];
+unlockSkins();
+
 let equippedSkin = skins[eval(getCookie("skin"))];
+
 
 // Classes
 class Player{
@@ -50,7 +53,13 @@ class Player{
         }
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
-        if(equippedSkin == "white"){
+        if(typeof equippedSkin == "object"){
+            let color = c.createRadialGradient(this.x, this.y, 1, this.x, this.y, 25);
+            color.addColorStop(0,equippedSkin[0]);
+            color.addColorStop(1,equippedSkin[1]);
+            c.fillStyle = color;
+            c.fill();
+        }else if(equippedSkin == "white"){
             c.strokeStyle = "black";
             c.stroke();
         }else{
@@ -478,7 +487,7 @@ function endgame(){
 
     document.cookie = `score= ${score}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`;
     document.cookie = `high=${highscore}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; 
-
+    unlockSkins();
     start = false;
 }
 
@@ -543,12 +552,35 @@ function switchSkin(dir){
     displaySkinC.fillRect(0, 0, displaySkinCanvas.width, displaySkinCanvas.height);
     displaySkinC.beginPath();
     displaySkinC.arc(100, 175, 90, 0, Math.PI*2, false);
-    if(equippedSkin == "white"){
-        displaySkinC.strokeStyle = "black";
-        displaySkinC.stroke();
+    if(typeof equippedSkin == "object"){
+        let color = displaySkinC.createRadialGradient(100, 175, 5, 100, 175, 150);
+        color.addColorStop(0,equippedSkin[0]);
+        color.addColorStop(1,equippedSkin[1]);
+        displaySkinC.fillStyle = color;
+        displaySkinC.fill();
+    }else{
+        displaySkinC.fillStyle = equippedSkin;
+        displaySkinC.fill();
     }
-    displaySkinC.fillStyle = equippedSkin;
-    displaySkinC.fill();
+    
+}
+
+function unlockSkins(){
+    // unlockable colors
+    let score;
+    try { score = highscore; } 
+    catch (error) { score = getCookie("high"); }
+
+    if(score > 1000){ skins.push(["#1BFFFF", "#2E3192"]); /* Ocean blue */ }
+    if(score > 2000){ skins.push(["#FBB03B", "#D4145A"]); /* Sanguine */ }
+    if(score > 3000){ skins.push(["#FCEE21", "#009245"]); /* Luscious Lime */ }
+    if(score > 4000){ skins.push(["#ED1E79", "#662D8C"]); /* Purple Lake */ }
+    if(score > 5000){ skins.push(["#FFDDE1", "#EE9CA7"]); /* Piglet */ }
+    if(score > 6000){ skins.push(["#516395", "#614385"]); /* Kashmir */ }
+    if(score > 7000){ skins.push(["#00CDAC", "#02AABD"]); /* Green Beach */ }
+    if(score > 8000){ skins.push(["#DD2476", "#FF512F"]); /* Bloody Mary */ }
+    if(score > 9000){ skins.push(["#FFC371", "#FF5F6D"]); /* Sweet Morning */ }
+    if(score > 10000){ skins.push(["#38EF7D", "#11998E"]); /* Quepal */ }
 }
 
 function setup(){
