@@ -225,7 +225,9 @@ function Update(){
 
         enemy.color = "white";
         enemy.draw(); 
-        boss.draw();
+        if(boss.active){
+            boss.draw();
+        }
     }); return; }
 
     // Update the score
@@ -487,9 +489,11 @@ function endgame(){
 
     document.cookie = `score= ${score}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`;
     document.cookie = `high=${highscore}; expires=Mon, 1 Jan 2026 12:00:00 GMT;`; 
+
+
     unlockSkins();
     start = false;
-}
+} 
 
 // Menu Variables
 
