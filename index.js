@@ -278,8 +278,7 @@ function Update(){
         }
 
         // end the game
-        const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
-        if(dist - enemy.radius - player.radius < 0 && !immunity){
+        if(checkCollision(enemy.x, enemy.y, ((enemy.type == "normal") ? enemy.radius : enemy.squareSize/1.25), player.x, player.y, player.radius) && !immunity){
             setTimeout(() => {
                 cancelAnimationFrame(frame);
                 endgame();
@@ -287,13 +286,13 @@ function Update(){
         }
 
         if(immunity){
-            if(checkCollision(enemy.x, enemy.y, enemy.radius, player.x, player.y, player.radius)){
+            if(checkCollision(enemy.x, enemy.y, ((enemy.type == "normal") ? enemy.radius : enemy.squareSize/1.25), player.x, player.y, player.radius)){
                 enemy.velocity.x *= -1;
                 enemy.velocity.y *= -1;
             }
         }
 
-        if(checkCollision(enemy.x, enemy.y, enemy.radius, boss.x, boss.y, boss.radius) && boss.active){
+        if(checkCollision(enemy.x, enemy.y, ((enemy.type == "normal") ? enemy.radius : enemy.squareSize/1.25), boss.x, boss.y, boss.radius) && boss.active){
             enemy.velocity.x *= -1;
             enemy.velocity.y *= -1;
         }
@@ -570,7 +569,6 @@ function unlockSkins(){
     let score;
     try { score = highscore; } 
     catch (error) { score = getCookie("high"); }
-    console.log(score);
     if(score > 1000 && skins.length < 6){ skins.push(["#1BFFFF", "#2E3192"]); /* Ocean blue */ }
     if(score > 2000 && skins.length < 7){ skins.push(["#FBB03B", "#D4145A"]); /* Sanguine */ }
     if(score > 3000 && skins.length < 8){ skins.push(["#FCEE21", "#009245"]); /* Luscious Lime */ }
@@ -581,7 +579,6 @@ function unlockSkins(){
     if(score > 8000 && skins.length < 13){ skins.push(["#DD2476", "#FF512F"]); /* Bloody Mary */ }
     if(score > 9000 && skins.length < 14){ skins.push(["#FFC371", "#FF5F6D"]); /* Sweet Morning */ }
     if(score > 10000 && skins.length < 15){ skins.push(["#38EF7D", "#11998E"]); /* Quepal */ }
-    console.log(skins);
 }
 
 function setup(){
