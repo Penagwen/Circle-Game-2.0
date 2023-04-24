@@ -574,9 +574,9 @@ function unlockSkins(){
     if(score > 3000 && skins.length < 8){ skins.push(["#FCEE21", "#009245"]); /* Luscious Lime */ }
     if(score > 4000 && skins.length < 9){ skins.push(["#ED1E79", "#662D8C"]); /* Purple Lake */ }
     if(score > 5000 && skins.length < 10){ skins.push(["#FFDDE1", "#EE9CA7"]); /* Piglet */ }
-    if(score > 6000 && skins.length < 11){ skins.push(["#516395", "#614385"]); /* Kashmir */ }
+    if(score > 6000 && skins.length < 11){ skins.push(["#614385", "#516395"]); /* Kashmir */ }
     if(score > 7000 && skins.length < 12){ skins.push(["#00CDAC", "#02AABD"]); /* Green Beach */ }
-    if(score > 8000 && skins.length < 13){ skins.push(["#DD2476", "#FF512F"]); /* Bloody Mary */ }
+    if(score > 8000 && skins.length < 13){ skins.push(["#FF512F", "#DD2476"]); /* Bloody Mary */ }
     if(score > 9000 && skins.length < 14){ skins.push(["#FFC371", "#FF5F6D"]); /* Sweet Morning */ }
     if(score > 10000 && skins.length < 15){ skins.push(["#38EF7D", "#11998E"]); /* Quepal */ }
 }
