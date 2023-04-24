@@ -225,6 +225,7 @@ function Update(){
 
         enemy.color = "white";
         enemy.draw(); 
+        boss.draw();
     }); return; }
 
     // Update the score
