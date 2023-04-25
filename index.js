@@ -150,6 +150,12 @@ class Enemy{
             }
             c.fillRect(this.x, this.y, this.squareSize, this.squareSize);
             return;
+        }else if(this.type == "hollow"){
+            c.beginPath();
+            c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
+            c.strokeStyle = this.color;
+            c.stroke();
+            return;
         }
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
@@ -261,22 +267,27 @@ function Update(){
         // if stop time is not active set the color to normal
         enemy.color = "black";
         // The chance for the enemy to turn towords the player
-        if(Math.random() > 0.99 && !repel && enemy.type != "giant"){
-            const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x)
-
-            enemy.velocity.x = Math.cos(angle)* enemy.speed;
-            enemy.velocity.y = Math.sin(angle)* enemy.speed;
-        }else if(repel){
+        if(repel){
             const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x)
 
             enemy.velocity.x = Math.cos(angle)* -enemy.speed;
             enemy.velocity.y = Math.sin(angle)* -enemy.speed;
+        }else if(Math.random() > 0.99 && (enemy.type == "normal" || enemy.type == "square")){
+            const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x)
+
+            enemy.velocity.x = Math.cos(angle)* enemy.speed;
+            enemy.velocity.y = Math.sin(angle)* enemy.speed;
+        }else if(Math.random() > 0.995 && enemy.type == "hollow"){
+            const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x)
+
+            enemy.velocity.x = Math.cos(angle)* enemy.speed;
+            enemy.velocity.y = Math.sin(angle)* enemy.speed;
         }
 
         // if enemy goes off screen remove it
         if(enemy.x + enemy.radius < -40 || enemy.x - enemy.radius > canvas.width+40 || enemy.y + enemy.radius < -40 || enemy.y - enemy.radius > canvas.height+40){
             setTimeout(() =>{
-                enemies.splice(index, 1)
+                enemies.splice(index, 1);
             }, 0)
         }
 
@@ -305,10 +316,10 @@ function Update(){
                 enemies.forEach((enemyInRadius) => {
                     if(Math.hypot(enemy.x - enemyInRadius.x, enemy.y - enemyInRadius.y) < 250){
                         const angle = Math.atan2(enemy.y - enemyInRadius.y, enemy.x - enemyInRadius.x);
-                        const velocityX = Math.cos(angle)* 6-Math.min((Math.hypot(enemy.x - enemyInRadius.x, enemy.y - enemyInRadius.y))/75, 6),
-                            velocityY = Math.sin(angle)* 6-Math.min((Math.hypot(enemy.x - enemyInRadius.x, enemy.y - enemyInRadius.y))/75, 6);
-                        enemyInRadius.velocity.x += velocityX;
-                        enemyInRadius.velocity.y += velocityY;
+                        const velocityX = Math.cos(angle) * 6 - Math.min(Math.hypot(enemy.x - enemyInRadius.x, enemy.y - enemyInRadius.y)/10, 6),
+                            velocityY = Math.sin(angle) * 6 - Math.min(Math.hypot(enemy.x - enemyInRadius.x, enemy.y - enemyInRadius.y)/10, 6);
+                        enemyInRadius.velocity.x = velocityX;
+                        enemyInRadius.velocity.y = velocityY;
                     }
                 });
                 enemies.splice(index, 1);
@@ -338,18 +349,21 @@ function spawnEnemies(){
         x = Math.random() * canvas.width;
         y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
     }
-    const angle = Math.atan2(player.y - y, player.x - x);
-    const velocityX = Math.cos(angle)* -(4 - radius/6),
-        velocityY = Math.sin(angle)* -(4 - radius/6);
-
+    let speed = -(4 - radius/6);
     let type;
-    let chance = Math.random();
-    if(chance < 0.95){
+    let chance = getRandomNumber(0, 100);
+    if(chance < 85){
         type = "normal";
-    }else{
+    }else if(chance < 95){
         type = "square";
+    }else{
+        type = "hollow";
+        speed *= 3;
     }
-    enemies.push(new Enemy(x, y, {x:velocityX, y:velocityY}, type, -(4 - radius/6), radius, squareSize, squareSize));
+    const angle = Math.atan2(player.y - y, player.x - x);
+    const velocityX = Math.cos(angle)* speed,
+        velocityY = Math.sin(angle)* speed;
+    enemies.push(new Enemy(x, y, {x:velocityX, y:velocityY}, type, speed, radius, squareSize, squareSize));
 }
 
 function pauseEnemies(){
@@ -494,6 +508,8 @@ function endgame(){
     unlockSkins();
     start = false;
 } 
+
+const getRandomNumber = (min, max) => Math.floor(Math.random()*(max-min)+min);
 
 // Menu Variables
 
